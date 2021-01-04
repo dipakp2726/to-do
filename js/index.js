@@ -41,7 +41,7 @@
 })();
 
 
-const printROWS=function (data){
+const printROWS = function (data) {
 
     $('#to-do-table tbody').html('')
     // console.log(data)
@@ -76,7 +76,7 @@ const printROWS=function (data){
 }
 
 // load initail data
-const init=function () {
+const init = function () {
 
     function custom_sort(a, b) {
         return new Date(a.date).getTime() - new Date(b.date).getTime();
@@ -95,8 +95,8 @@ const init=function () {
 
 init()
 
- // convert array to object
-const objectifyForm=function(formArray) {
+// convert array to object
+const objectifyForm = function (formArray) {
     //serialize data function
     var returnArray = {};
     for (var i = 0; i < formArray.length; i++) {
@@ -106,25 +106,25 @@ const objectifyForm=function(formArray) {
 }
 
 
-$(document).ready(function(){
+$(document).ready(function () {
 
     console.log('ready')
 
     // $('#to-do-table').DataTable()
 
     /* insert to-do */
-    $('#to-do-insert').on('submit',(event)=>{
+    $('#to-do-insert').on('submit', (event) => {
 
 
         event.preventDefault()
-      
+
         let form = document.getElementById("to-do-insert");
-        if(!form.checkValidity()){
+        if (!form.checkValidity()) {
             // console.log('error')
             event.stopPropagation()
             return false
         }
-       
+
         let task = $('#to-do-insert').serializeArray()
         task = objectifyForm(task)
         task.id = 'id' + (new Date()).getTime();
@@ -138,13 +138,21 @@ $(document).ready(function(){
                 console.log('inserted successfully')
             });
 
-      
-            // ! TODO reset form validatioin
+
+        // ! TODO reset form validatioin
 
         document.getElementById("to-do-insert").reset();
         $('#to-do-insert').removeClass('was-validated')
 
-             init()
+        $('#to-do-response').html(`<div class="alert alert-success" role="alert">
+                   Task Inserted Successfully
+                    </div>`)
+
+        setTimeout(() => {
+            $('#to-do-response').html('')
+        }, 2000);
+
+        init()
 
         // $(form).data('formValidation').resetForm();
     })
@@ -158,7 +166,8 @@ $(document).ready(function(){
         event.preventDefault();
         // console.log('clicked')
 
-        let id = $(this).parent().parent().attr('data-id');
+        let row = $(this).parent().parent()
+        let id = row.attr('data-id');
 
         fetch('http://localhost:3000/tasks/' + id, {
             method: "DELETE",
@@ -168,7 +177,16 @@ $(document).ready(function(){
             .then(json => console.log('deleted'))
             .catch(err => console.log(err));
 
-        init()
+        row.html(`<td colspan="7">
+                        <div class="alert alert-danger" role="alert">
+                   Task Deleted Successfully
+                    </div>
+                    <td/>`)
+
+        setTimeout(() => {
+            row.remove()
+        }, 2000);
+
 
     })
 
@@ -179,7 +197,8 @@ $(document).ready(function(){
         e.preventDefault();
         // console.log('clicked')
 
-        let id = $(this).parent().parent().attr('data-id')
+        let row = $(this).parent().parent()
+        let id = row.attr('data-id');
 
         let status = $(this).is(':checked') ? 'Done' : 'Pending'
 
@@ -192,8 +211,21 @@ $(document).ready(function(){
             .then(json => console.log())
             .catch(err => console.log(err));
 
-        // refreshing data
-         init()
+ 
+
+
+        if ($(this).is(':checked')){    
+            row.addClass('table-secondary')
+            row.find('td:eq(5)').html(status)  
+            
+        }else{
+            row.removeClass('table-secondary')
+            row.find('td:eq(5)').html(status)  
+        }
+     
+       
+            // refreshing data
+        // init()
 
 
         return false;
@@ -203,7 +235,7 @@ $(document).ready(function(){
 
     })
 
-
+// edit task
     $('#to-do-table').on('click', '.edit-task', function (event) {
 
         console.log('clicked')
@@ -220,11 +252,14 @@ $(document).ready(function(){
 
 
 
-    $('#sort-by-date').on('change', function (event){
+/* sort items by date */
+    $('#sort-by-date').on('change', function (event) {
 
         event.preventDefault()
 
-        let type=$(this).val()    
+        $('#filter-by-category').val('')
+
+        let type = $(this).val()
 
         fetch('http://localhost:3000/tasks?_sort=date&_order=' + type)
             .then(response => response.json())
@@ -236,12 +271,17 @@ $(document).ready(function(){
     })
 
 
-
+// filter item by category
     $('#filter-by-category').on('change', function (event) {
 
         event.preventDefault()
 
         let type = $(this).val()
+
+        if(!type) {
+            init()
+            return false
+        }
 
         fetch('http://localhost:3000/tasks?category=' + type)
             .then(response => response.json())
