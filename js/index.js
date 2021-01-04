@@ -23,10 +23,6 @@
 
 
 
-
-
-
-
 // date restriction
 (function () {
     let today = new Date();
@@ -73,7 +69,7 @@ const init=(function () {
                         <td>${task.date}</td>
                         <td class="status">${task.status}</td>
                         <td>
-                            <button class="btn btn-primary edit-taskk"><i class="fa fa-edit"></i></button>
+                            <button class="btn btn-primary edit-task"><i class="fa fa-edit"></i></button>
                             <button class="btn btn-danger delete-task"><i class="fa fa-trash"></i></button>
                         </td>
                        
@@ -179,6 +175,21 @@ $(document).ready(function(){
 
         return false;
 
+
+
+
+    })
+
+
+    $('#to-do-table').on('click', '.edit-task', function (event) {
+
+        console.log('clicked')
+
+        let id = $(this).parent().parent().attr('data-id')
+
+        let url = "update.html?id=" + id;
+
+        window.location.href = url
 
 
 
