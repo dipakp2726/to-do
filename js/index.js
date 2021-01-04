@@ -75,6 +75,66 @@ const printROWS = function (data) {
 
 }
 
+
+
+const groupBY=function(data){
+
+
+    let groups = {};
+    for (var i = 0; i < data.length; i++) {
+        var groupName = data[i].category;
+        if (!groups[groupName]) {
+            groups[groupName] = [];
+        }
+        groups[groupName].push(data[i]);
+    }
+
+    // console.log(groups)
+
+    $('#to-do-table tbody').html('')
+    for (let key in groups) {
+
+        let row =` <tr class="text-center bg-secondary bg-gradient">
+                               
+                          <td colspan="4">Category: ${key}</td>
+                               
+                         <td colspan="3">Number of To-do : ${groups[key].length}</td>
+
+                            </tr>`
+
+        $('#to-do-table tbody').append(row)
+
+        // console.log(groups[key])
+
+        for (let task of groups[key]) {
+
+            let checked = task.status == 'Done' ? 'checked' : null
+
+            let highlight = checked == null ? null : 'table-secondary'
+
+            let row = `<tr class="text-center ${highlight} " data-id="${task.id}">
+                        <td><input class="form-check-input is-task-done" ${checked} type="checkbox" ></td>
+                        <td>${task.title}</td>
+                        <td>${task.desc}</td>
+                        <td>${task.category} </td>
+                        <td>${task.date}</td>
+                        <td class="status">${task.status}</td>
+                        <td>
+                            <button class="btn btn-primary edit-task"><i class="fa fa-edit"></i></button>
+                            <button class="btn btn-danger delete-task"><i class="fa fa-trash"></i></button>
+                        </td>
+                       
+                    </tr>`;
+
+
+            $('#to-do-table tbody').append(row)
+           
+        }
+    }
+
+
+}
+
 // load initail data
 const init = function () {
 
@@ -94,6 +154,9 @@ const init = function () {
 };
 
 init()
+
+
+
 
 // convert array to object
 const objectifyForm = function (formArray) {
@@ -139,7 +202,7 @@ $(document).ready(function () {
             });
 
 
-        // ! TODO reset form validatioin
+       
 
         document.getElementById("to-do-insert").reset();
         $('#to-do-insert').removeClass('was-validated')
@@ -177,7 +240,7 @@ $(document).ready(function () {
             .then(json => console.log('deleted'))
             .catch(err => console.log(err));
 
-        row.html(`<td colspan="7">
+        row.html(`<td colspan="7" class=".d-sm-none .d-md-block">
                         <div class="alert alert-danger" role="alert">
                    Task Deleted Successfully
                     </div>
@@ -211,20 +274,20 @@ $(document).ready(function () {
             .then(json => console.log())
             .catch(err => console.log(err));
 
- 
 
 
-        if ($(this).is(':checked')){    
+
+        if ($(this).is(':checked')) {
             row.addClass('table-secondary')
-            row.find('td:eq(5)').html(status)  
-            
-        }else{
+            row.find('td:eq(5)').html(status)
+
+        } else {
             row.removeClass('table-secondary')
-            row.find('td:eq(5)').html(status)  
+            row.find('td:eq(5)').html(status)
         }
-     
-       
-            // refreshing data
+
+
+        // refreshing data
         // init()
 
 
@@ -235,7 +298,7 @@ $(document).ready(function () {
 
     })
 
-// edit task
+    // edit task
     $('#to-do-table').on('click', '.edit-task', function (event) {
 
         console.log('clicked')
@@ -252,7 +315,7 @@ $(document).ready(function () {
 
 
 
-/* sort items by date */
+    /* sort items by date */
     $('#sort-by-date').on('change', function (event) {
 
         event.preventDefault()
@@ -271,14 +334,14 @@ $(document).ready(function () {
     })
 
 
-// filter item by category
+    // filter item by category
     $('#filter-by-category').on('change', function (event) {
 
         event.preventDefault()
 
         let type = $(this).val()
 
-        if(!type) {
+        if (!type) {
             init()
             return false
         }
@@ -290,6 +353,39 @@ $(document).ready(function () {
             });
 
     })
+
+
+    $('#group-by-check').on('change', function (event) {
+
+
+        event.preventDefault()
+        let status = $(this).is(':checked') 
+
+        
+
+
+        fetch('http://localhost:3000/tasks/')
+            .then(response => response.json())
+            .then(data => {
+
+                
+                if(status){
+                    groupBY (data)
+
+                }else{
+
+                    printROWS(data)
+                }
+
+            });
+
+
+
+    })
+
+
+
+
 
 
 
