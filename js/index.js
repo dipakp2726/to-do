@@ -41,27 +41,17 @@
 })();
 
 
-// load initail data
-const init=(function () {
+const printROWS=function (data){
 
-    function custom_sort(a, b) {
-        return new Date(a.date).getTime() - new Date(b.date).getTime();
-    }
+    $('#to-do-table tbody').html('')
+    // console.log(data)
+    data.forEach(task => {
 
-    fetch('http://localhost:3000/tasks/')
-        .then(response => response.json())
-        .then(data => {
+        let checked = task.status == 'Done' ? 'checked' : null
 
-            data.sort(custom_sort)
+        let highlight = checked == null ? null : 'table-secondary'
 
-            // console.log(data)
-            data.forEach(task => {
-
-                let checked = task.status == 'Done' ? 'checked' : null
-
-                let highlight = checked == null ? null : 'table-secondary'
-
-                let row = `<tr class="text-center ${highlight} " data-id="${task.id}">
+        let row = `<tr class="text-center ${highlight} " data-id="${task.id}">
                         <td><input class="form-check-input is-task-done" ${checked} type="checkbox" ></td>
                         <td>${task.title}</td>
                         <td>${task.desc}</td>
@@ -75,14 +65,35 @@ const init=(function () {
                        
                     </tr>`;
 
-                $('#to-do-table tbody').append(row)
+
+        $('#to-do-table tbody').append(row)
 
 
-            })
+    })
+
+
+
+}
+
+// load initail data
+const init=function () {
+
+    function custom_sort(a, b) {
+        return new Date(a.date).getTime() - new Date(b.date).getTime();
+    }
+
+    fetch('http://localhost:3000/tasks/')
+        .then(response => response.json())
+        .then(data => {
+
+            data.sort(custom_sort)
+            printROWS(data)
 
         });
 
-})();
+};
+
+init()
 
  // convert array to object
 const objectifyForm=function(formArray) {
@@ -99,6 +110,7 @@ $(document).ready(function(){
 
     console.log('ready')
 
+    // $('#to-do-table').DataTable()
 
     /* insert to-do */
     $('#to-do-insert').on('submit',(event)=>{
@@ -126,9 +138,15 @@ $(document).ready(function(){
                 console.log('inserted successfully')
             });
 
+      
             // ! TODO reset form validatioin
 
         document.getElementById("to-do-insert").reset();
+        $('#to-do-insert').removeClass('was-validated')
+
+             init()
+
+        // $(form).data('formValidation').resetForm();
     })
 
 
@@ -150,6 +168,8 @@ $(document).ready(function(){
             .then(json => console.log('deleted'))
             .catch(err => console.log(err));
 
+        init()
+
     })
 
 
@@ -157,7 +177,7 @@ $(document).ready(function(){
     $('#to-do-table').on('change', '.is-task-done', function (e) {
 
         e.preventDefault();
-        console.log('clicked')
+        // console.log('clicked')
 
         let id = $(this).parent().parent().attr('data-id')
 
@@ -169,8 +189,11 @@ $(document).ready(function(){
             headers: { "Content-type": "application/json; charset=UTF-8" }
         })
             .then(response => response.json())
-            .then(json => console.log(json))
+            .then(json => console.log())
             .catch(err => console.log(err));
+
+        // refreshing data
+         init()
 
 
         return false;
@@ -192,6 +215,39 @@ $(document).ready(function(){
         window.location.href = url
 
 
+
+    })
+
+
+
+    $('#sort-by-date').on('change', function (event){
+
+        event.preventDefault()
+
+        let type=$(this).val()    
+
+        fetch('http://localhost:3000/tasks?_sort=date&_order=' + type)
+            .then(response => response.json())
+            .then(data => {
+
+                printROWS(data)
+            });
+
+    })
+
+
+
+    $('#filter-by-category').on('change', function (event) {
+
+        event.preventDefault()
+
+        let type = $(this).val()
+
+        fetch('http://localhost:3000/tasks?category=' + type)
+            .then(response => response.json())
+            .then(data => {
+                printROWS(data)
+            });
 
     })
 

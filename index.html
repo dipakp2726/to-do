@@ -40,7 +40,7 @@
 
     <!-- Custom styles for this template -->
     <link href="css/form-validation.css" rel="stylesheet">
-    <link href="css/main.css" rel="stylesheet">
+    <!-- <link href="css/main.css" rel="stylesheet"> -->
 </head>
 
 <body class="bg-light">
@@ -49,7 +49,7 @@
         <main>
             <div class="py-5 text-center">
                 <!-- <img class="d-block mx-auto mb-4" src="../assets/brand/bootstrap-logo.svg" alt="" width="72" height="57"> -->
-                <h2>TO-DO</h2>
+                <h2>TO-DO APP</h2>
                 <!-- <p class="lead">Below is an example form built entirely with Bootstrap’s form controls. Each required form group has a validation state that can be triggered by attempting to submit the form without completing it.</p> -->
             </div>
 
@@ -104,8 +104,8 @@
 
                                 <div class="col-md-4">
                                     <label for="date" class="form-label">Due Date</label>
-                                    <input type="date" name="date" class="form-control datepicker" min="mindate()" id="date"
-                                        required>
+                                    <input type="date" name="date" class="form-control datepicker" min="mindate()"
+                                        id="date" required>
                                     <div class="invalid-feedback">
                                         Please select a valid Date.
                                     </div>
@@ -131,8 +131,35 @@
 
             <div class="row g-3">
                 <h2>All Tasks</h2>
-                <div class="table table-responsive ">
 
+
+                <div class="m-2 d-sm-flex justify-content-evenly">
+                    <div class=" mb-2">
+                        <label for="category">Category Filter</label>
+                        <select class="form-select mt-2"  id="filter-by-category" name="category"
+                            aria-label="Floating label select example">
+                            <option selected value="">ALL</option>
+                            <option>Urgent and important</option>
+                            <option>Time sensitive but less important</option>
+                            <option>Important but not time sensitive</option>
+                            <option>Not important and not urgent</option>
+                        </select>
+                    </div>
+
+                    <div class=" mb-2">
+                        <label for="category">Sort By Date</label>
+                        <select class="form-select mt-2" id="sort-by-date" aria-label="Floating label select example">
+                            <option selected value="asc">Ascending </option>
+                            <option value="desc">Descending </option>
+
+                        </select>
+                    </div>
+
+                </div>
+
+
+
+                <div class="table table-responsive ">
 
 
                     <table class="table " id="to-do-table">
@@ -148,7 +175,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr class="text-center">
+                            <!-- <tr class="text-center">
                                 <td><input class="form-check-input is-task-done" type="checkbox" id="inlineCheckbox1"
                                         value="option1">
                                 </td>
@@ -162,7 +189,7 @@
                                     <button class="btn btn-danger delete-task"><i class="fa fa-trash"></i></button>
                                 </td>
 
-                            </tr>
+                            </tr> -->
 
                         </tbody>
                     </table>
@@ -178,13 +205,13 @@
 
         <footer class="my-5 pt-5 text-muted text-center text-small">
             <p class="mb-1">&copy; 2020 TO-Do Web APP</p>
-            <ul class="list-inline">
+            <!-- <ul class="list-inline">
                 <li class="list-inline-item"><a href="#">Privacy</a></li>
                 <li class="list-inline-item"><a href="#">Terms</a></li>
                 <li class="list-inline-item"><a href="#">Support</a></li>
-            </ul>
+            </ul> -->
         </footer>
-    </div>  
+    </div>
 
 
     <!-- Option 1: Bootstrap Bundle with Popper -->
@@ -201,6 +228,36 @@
 
     <script src="js/form-validation.js"></script>
     <script src="js/index.js"></script>
+
+
+
+
+    <script>
+        function Filter() {
+            // Declare variables
+            var input, filter, table, tr, td, i, txtValue;
+            input = document.getElementById("filter");
+            filter = input.value.toUpperCase();
+
+
+
+            table = document.getElementById("to-do-table");
+            tr = table.getElementsByTagName("tr");
+
+            // Loop through all table rows, and hide those who don't match the search query
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[3];
+                if (td) {
+                    txtValue = td.textContent || td.innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+    </script>
 </body>
 
 </html>
