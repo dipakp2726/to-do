@@ -50,8 +50,7 @@ function getID(){
             $('#desc').val(data.desc)
             $('#date').val(data.date)
             $('#category').val(data.category)
-            $('#status').val(data.status)
-            $()
+           
 
         });
 
